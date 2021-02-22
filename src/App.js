@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 const minQuantity = 1
 
@@ -8,14 +8,48 @@ function CoerceQuantity(value) {
   else return minQuantity
 }
 
+const endpoint = {
+  payUtrust: 'https://4x715wi6k8.execute-api.us-east-1.amazonaws.com/pay/utrust'
+}
+
+const api = {
+  createOrder: () =>
+    fetch(endpoint.payUtrust, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' }
+    }).then((res) => {
+      if (res.ok) {
+        return res.json()
+      }
+      return Promise.reject({ status: res.status, message: res.statusText })
+    })
+}
+
 export function App() {
   const [quantity, setQuantity] = useState(minQuantity)
   const [submitting, setSubmitting] = useState(false)
+  const [redirectURI, setRedirectURI] = useState('')
+
+  useEffect(() => {
+    if (redirectURI) {
+      window.location = redirectURI
+    }
+  }, [redirectURI])
 
   const onSubmit = useCallback((event) => {
     event.preventDefault()
-    console.log('on submit')
     setSubmitting(true)
+
+    api.createOrder().then(
+      ({ redirectURI: target }) => {
+        setSubmitting(false)
+        setRedirectURI(target)
+      },
+      (error) => {
+        console.error(error)
+      }
+    )
   }, [])
 
   const onQuantityChange = useCallback((event) => {
