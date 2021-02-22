@@ -23,12 +23,30 @@ export function App() {
         <h1>Hello Utrust</h1>
         <form onSubmit={onSubmit}>
           <input
+            onKeyDown={(event) => {
+              const isDigit = event.code.includes('Digit')
+
+              const isInteractionKey = [
+                'ArrowUp',
+                'ArrowDown',
+                'Backspace',
+                'Enter',
+                'Tab'
+              ].includes(event.code)
+
+              if (!isDigit && !isInteractionKey) {
+                event.preventDefault()
+              }
+            }}
             type='number'
             name='quantity'
             step={1}
             min={minQuantity}
             value={quantity}
-            onChange={onQuantityChange}
+            onBlur={onQuantityChange}
+            onChange={(event) => {
+              setQuantity(event.target.value)
+            }}
           />
           <input type='submit' />
         </form>
