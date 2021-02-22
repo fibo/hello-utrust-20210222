@@ -24,17 +24,13 @@ export function App() {
         <form onSubmit={onSubmit}>
           <input
             onKeyDown={(event) => {
-              const isDigit = event.code.includes('Digit')
-
-              const isInteractionKey = [
-                'ArrowUp',
-                'ArrowDown',
-                'Backspace',
-                'Enter',
-                'Tab'
+              const isPeriodOrComma = [
+                'Comma',
+                'Period',
+                'NumpadDecimal'
               ].includes(event.code)
 
-              if (!isDigit && !isInteractionKey) {
+              if (isPeriodOrComma) {
                 event.preventDefault()
               }
             }}
